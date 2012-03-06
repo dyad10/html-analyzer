@@ -4,35 +4,74 @@ require Data::Dumper;
 
 use strict;
 
-my $p = HTML::TokeParser->new("files/ashfurrow.com/index3.html") 
-  || die "Cannot open $!";
-$p->empty_element_tags(1); # configure its behaviour
+my $dirname = "files/wired";
 
-my $s1 = '';
-while (my $token = $p->get_token) {
+my @files;
+
+opendir(DIR, $dirname) or die "cant opendir $dirname: $!";
+while (defined(my $file = readdir(DIR))) {
+  if($file ne '..' && $file ne '.') {
+    print $dirname . '/' . $file; print "\n";
+    push(@files, $dirname . "/" . $file);
+  }
+}
+closedir(DIR);
+
+foreach my $file (@files) {
+  print $file . "\n";
+  foreach my $comparison(@files) {
+    if($file ne $comparison) {
+      print '  ' . $comparison . "\n";
+      my $p = HTML::TokeParser->new($file) || die "Cannot open $!";
+      $p->empty_element_tags(1); #configure its behavior
+      my $s1 = '';
+      while (my $token = $p->get_token) {
+        $s1 .= $token->[0];
+      }
+
+      $p = HTML::TokeParser->new($comparison) || die "Cannot open $!";
+      $p->empty_element_tags(1);
+      my $s2 = '';
+      while (my $token = $p->get_token) {
+        $s2 .= $token->[0];
+      }
+      print $s1 . "\n" . $s2 . "\n\n";
+  #    print "The Levenshtein distance is: ";
+  #    print levenshtein($s1, $s2) . "\n"; 
+    
+    }
+  }
+}
+
+#my $p = HTML::TokeParser->new("files/ashfurrow.com/index3.html") 
+#  || die "Cannot open $!";
+#$p->empty_element_tags(1); # configure its behaviour
+
+#my $s1 = '';
+#while (my $token = $p->get_token) {
 #  print Data::Dumper->Dump($token);
 #  print	"\n\n";
-  $s1 .= $token->[0];
-} 
+#  $s1 .= $token->[0];
+#} 
 
-$s1 = substr($s1, 0, int length($s1) / 2) . "\n*****************";
+#$s1 = substr($s1, 0, int length($s1) / 2) . "\n*****************";
 
-print $s1;
+#print $s1;
 #print "\n\n";
-$p = HTML::TokeParser->new("files/ashfurrow.com/index.html")
-  || die "Cannot open $!";
-$p->empty_element_tags(1);
+#$p = HTML::TokeParser->new("files/ashfurrow.com/index.html")
+#  || die "Cannot open $!";
+#$p->empty_element_tags(1);
 
-my $s2 = '';
-while (my $token = $p->get_token) {
-  $s2 .= $token->[0];
-}
-$s2 = substr($s2, 0, int length($s2) / 2);
+#my $s2 = '';
+#while (my $token = $p->get_token) {
+#  $s2 .= $token->[0];
+#}
+#$s2 = substr($s2, 0, int length($s2) / 2);
 
-print $s2;
+#print $s2;
 
-print "The Levenshtein distance is: ";
-print levenshtein($s1, $s2) . "\n";
+#print "The Levenshtein distance is: ";
+#print levenshtein($s1, $s2) . "\n";
 #print `/home/achen/workspace/html-analyzer/levenshtein_distance.m '$s1' '$s2'`;
 
 

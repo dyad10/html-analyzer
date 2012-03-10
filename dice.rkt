@@ -1,4 +1,6 @@
-#lang racket
+#!/usr/bin/env mzscheme
+#lang scheme/base
+
 (define (rawnumer shorter longer)
   (define (aux shorter longer counter)
     (cond ((null? shorter) counter)
@@ -49,7 +51,7 @@
 		(aux test test-body 0))
 
 (define (dice-trial dice-test test-body)
-	(/ (mult-list-test dice-test test-body)
+	(/ (multi-list-test dice-test test-body)
 	   (length test-body)))
 
 
